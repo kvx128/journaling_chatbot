@@ -108,7 +108,7 @@ def generate(
         ]
 
         try:
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=360)
+            res = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=360)
         except subprocess.TimeoutExpired:
             logging.error(f"[{task}] batch {b}/{batches}: timeout after 360s, skipping.")
             continue

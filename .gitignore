@@ -51,3 +51,11 @@ htmlcov/
 .vscode/
 .DS_Store
 Thumbs.db
+
+# ML artifacts — too large for git (209MB total: 45MB optimizer states,
+# 22MB adapter safetensors, 17MB tokenizers). Trained adapters are
+# reproducible via `python -m ml.train.train_journal`; training data is
+# regenerable via `python -m ml.train.prepare_journal_data` from the
+# DVC-tracked sources in ml/data/.
+ml/train/adapters/
+ml/train/data/

@@ -37,26 +37,32 @@ def chat_endpoint(request: ChatRequest, deps: tuple[Session, User] = Depends(gua
         )
 
     decision = route(request.message)
-    structured_data = None
+    structured_data: dict | None = None
     reply = "I'm not sure how to handle that."
 
+    def dispatch(intent: IntentEnum) -> tuple[str, dict | None]:
+        if intent in (IntentEnum.FINANCE_LOG, IntentEnum.FINANCE_QUERY):
+            res = FinanceClient().handle(user.id, request.message, intent.value)
+            return res.get("reply", ""), res.get("structured_data")
+        if intent in (IntentEnum.MOOD_CHECKIN, IntentEnum.JOURNAL_FREE):
+            res = JournalClient().handle(user.id, request.message, intent.value)
+            return res.get("reply", ""), res.get("structured_data")
+        if intent is IntentEnum.SMALLTALK:
+            return "Hello! I'm here to help you log your expenses and mood. What's on your mind?", None
+        return reply, None
+
     try:
-        if decision.intent in (IntentEnum.FINANCE_LOG, IntentEnum.FINANCE_QUERY):
-            fc = FinanceClient()
-            task = "FINANCE_LOG" if decision.intent == IntentEnum.FINANCE_LOG else "FINANCE_QUERY"
-            res = fc.handle(user.id, request.message, task)
-            reply = res.get("reply", "")
-            structured_data = res.get("structured_data")
+        reply, structured_data = dispatch(decision.intent)
 
-        elif decision.intent in (IntentEnum.MOOD_CHECKIN, IntentEnum.JOURNAL_FREE):
-            jc = JournalClient()
-            task = "MOOD_CHECKIN" if decision.intent == IntentEnum.MOOD_CHECKIN else "JOURNAL_FREE"
-            res = jc.handle(user.id, request.message, task)
-            reply = res.get("reply", "")
-            structured_data = res.get("structured_data")
-
-        elif decision.intent == IntentEnum.SMALLTALK:
-            reply = "Hello! I'm here to help you log your expenses and mood. What's on your mind?"
+        # Fan out to any secondary intent so a message carrying both a spend and a
+        # feeling lands in both stores. Merged into one reply so the user sees a
+        # single coherent response, not two stitched-together bot voices.
+        for extra in decision.secondary_intents:
+            extra_reply, extra_data = dispatch(extra)
+            if extra_data:
+                structured_data = {**(structured_data or {}), **extra_data}
+            if extra_reply:
+                reply = f"{reply} {extra_reply}".strip()
 
     except httpx.HTTPStatusError as e:
         if e.response.status_code == 400:

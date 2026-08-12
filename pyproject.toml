@@ -24,6 +24,14 @@ dependencies = [
     "pytest",
     "pytest-asyncio",
     "dvc>=3.67.1",
+    "torch>=2.11.0",
+    "transformers>=5.15.0",
+    "peft>=0.20.0",
+    "trl>=1.9.2",
+    "bitsandbytes>=0.50.0",
+    "accelerate>=1.14.0",
+    "datasets>=5.0.1",
+    "numpy>=2.5.2",
 ]
 
 [project.scripts]
@@ -32,4 +40,13 @@ journal-label = "cli.label_commands:app"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["shared*", "orchestrator*", "services*", "cli*"]
+include = ["shared*", "orchestrator*", "services*", "cli*", "ml*"]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }
+torchvision = { index = "pytorch-cu128" }

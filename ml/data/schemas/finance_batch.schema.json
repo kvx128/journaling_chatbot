@@ -11,19 +11,30 @@
             "type": "string"
           },
           "amount_minor": {
-            "type": ["integer", "null"]
+            "anyOf": [
+              {"type": "integer"},
+              {"type": "null"}
+            ]
           },
           "category": {
-            "type": ["string", "null"],
-            "enum": [
-              "GROCERIES", "DINING", "FOOD_DELIVERY", "TRANSPORT", "FUEL", "RENT",
-              "UTILITIES", "MOBILE_INTERNET", "SUBSCRIPTIONS", "SHOPPING", "HEALTH",
-              "FITNESS", "EDUCATION", "ENTERTAINMENT", "TRAVEL", "GIFTS", "INSURANCE",
-              "SAVINGS_INVESTMENT", "OTHER", null
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "GROCERIES", "DINING", "FOOD_DELIVERY", "TRANSPORT", "FUEL", "RENT",
+                  "UTILITIES", "MOBILE_INTERNET", "SUBSCRIPTIONS", "SHOPPING", "HEALTH",
+                  "FITNESS", "EDUCATION", "ENTERTAINMENT", "TRAVEL", "GIFTS", "INSURANCE",
+                  "SAVINGS_INVESTMENT", "OTHER"
+                ]
+              },
+              {"type": "null"}
             ]
           },
           "merchant": {
-            "type": ["string", "null"]
+            "anyOf": [
+              {"type": "string"},
+              {"type": "null"}
+            ]
           }
         },
         "required": ["text", "amount_minor", "category", "merchant"]
