@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "amount_minor": {
+            "type": ["integer", "null"]
+          },
+          "category": {
+            "type": ["string", "null"],
+            "enum": [
+              "GROCERIES", "DINING", "FOOD_DELIVERY", "TRANSPORT", "FUEL", "RENT",
+              "UTILITIES", "MOBILE_INTERNET", "SUBSCRIPTIONS", "SHOPPING", "HEALTH",
+              "FITNESS", "EDUCATION", "ENTERTAINMENT", "TRAVEL", "GIFTS", "INSURANCE",
+              "SAVINGS_INVESTMENT", "OTHER", null
+            ]
+          },
+          "merchant": {
+            "type": ["string", "null"]
+          }
+        },
+        "required": ["text", "amount_minor", "category", "merchant"]
+      }
+    }
+  },
+  "required": ["examples"]
+}

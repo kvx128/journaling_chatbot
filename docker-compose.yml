@@ -1,0 +1,46 @@
+services:
+  orchestrator:
+    container_name: journaling-orchestrator
+    build:
+      context: .
+      dockerfile: services/orchestrator/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - journal_data:/app/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DATABASE_URL=sqlite:////app/data/journal.db
+      - API_KEY=dev-local-key
+      - FINANCE_BOT_URL=http://finance-bot:8001
+      - JOURNAL_BOT_URL=http://journal-bot:8002
+    command: sh -c "uv run alembic upgrade head && uv run uvicorn services.orchestrator.main:app --host 0.0.0.0 --port 8000"
+
+  finance-bot:
+    container_name: journaling-finance-bot
+    build:
+      context: .
+      dockerfile: services/finance_bot/Dockerfile
+    expose:
+      - "8001"
+    volumes:
+      - journal_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:////app/data/journal.db
+      - API_KEY=dev-local-key
+
+  journal-bot:
+    container_name: journaling-journal-bot
+    build:
+      context: .
+      dockerfile: services/journal_bot/Dockerfile
+    expose:
+      - "8002"
+    volumes:
+      - journal_data:/app/data
+    environment:
+      - DATABASE_URL=sqlite:////app/data/journal.db
+      - API_KEY=dev-local-key
+
+volumes:
+  journal_data:

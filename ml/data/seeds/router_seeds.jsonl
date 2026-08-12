@@ -1,0 +1,25 @@
+{"text": "Spent 500 on groceries today.", "intent": "FINANCE_LOG"}
+{"text": "I feel so happy today, the weather is amazing.", "intent": "JOURNAL_FREE"}
+{"text": "How much did I spend on dining out this month?", "intent": "FINANCE_QUERY"}
+{"text": "Hey, what's up?", "intent": "SMALLTALK"}
+{"text": "so tired...", "intent": "MOOD_CHECKIN"}
+{"text": "Just bought some books for 1200", "intent": "FINANCE_LOG"}
+{"text": "I can't believe I lost my keys again, I'm so frustrated.", "intent": "JOURNAL_FREE"}
+{"text": "Paid rent 25000", "intent": "FINANCE_LOG"}
+{"text": "Tell me my total expenses for August", "intent": "FINANCE_QUERY"}
+{"text": "Feeling anxious about the meeting tomorrow.", "intent": "MOOD_CHECKIN"}
+{"text": "yo", "intent": "SMALLTALK"}
+{"text": "got coffee for 250", "intent": "FINANCE_LOG"}
+{"text": "no wait, it was 540", "intent": "FINANCE_LOG"}
+{"text": "didn't end up buying it", "intent": "UNKNOWN"}
+{"text": "ok", "intent": "SMALLTALK"}
+{"text": "I am so drained today.", "intent": "MOOD_CHECKIN"}
+{"text": "Had a great time at the park with friends, we just talked and walked around.", "intent": "JOURNAL_FREE"}
+{"text": "Bought new shoes 3k", "intent": "FINANCE_LOG"}
+{"text": "What is my fuel expense?", "intent": "FINANCE_QUERY"}
+{"text": "Good morning!", "intent": "SMALLTALK"}
+{"text": "Feeling pretty neutral today, nothing much happened.", "intent": "JOURNAL_FREE"}
+{"text": "pizza 450", "intent": "FINANCE_LOG"}
+{"text": "hmm", "intent": "UNKNOWN"}
+{"text": "Spent too much today, feeling a bit guilty about dropping 4k on clothes.", "intent": "FINANCE_LOG"}
+{"text": "Just woke up feeling sick.", "intent": "MOOD_CHECKIN"}

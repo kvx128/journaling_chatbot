@@ -1,0 +1,5 @@
+outs:
+- md5: bd7d94c82efd1c5e504b00c16b189165
+  size: 34219
+  hash: md5
+  path: pool.jsonl

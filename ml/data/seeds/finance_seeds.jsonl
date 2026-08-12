@@ -1,0 +1,25 @@
+{"text": "Spent 500 on groceries today.", "amount_minor": 50000, "category": "GROCERIES", "merchant": null}
+{"text": "Paid rent 25000", "amount_minor": 2500000, "category": "RENT", "merchant": null}
+{"text": "got coffee for 250 at starbucks", "amount_minor": 25000, "category": "DINING", "merchant": "starbucks"}
+{"text": "Bought new shoes 3k", "amount_minor": 300000, "category": "SHOPPING", "merchant": null}
+{"text": "pizza 450", "amount_minor": 45000, "category": "FOOD_DELIVERY", "merchant": null}
+{"text": "cab to office 300", "amount_minor": 30000, "category": "TRANSPORT", "merchant": null}
+{"text": "filled petrol rs 1500", "amount_minor": 150000, "category": "FUEL", "merchant": null}
+{"text": "electricity bill 2.5k", "amount_minor": 250000, "category": "UTILITIES", "merchant": null}
+{"text": "netflix 649", "amount_minor": 64900, "category": "SUBSCRIPTIONS", "merchant": "netflix"}
+{"text": "doctor consultation 800", "amount_minor": 80000, "category": "HEALTH", "merchant": null}
+{"text": "gym fee 1500", "amount_minor": 150000, "category": "FITNESS", "merchant": null}
+{"text": "udemy course ₹450", "amount_minor": 45000, "category": "EDUCATION", "merchant": "udemy"}
+{"text": "movie tickets 600", "amount_minor": 60000, "category": "ENTERTAINMENT", "merchant": null}
+{"text": "flight to delhi 5500", "amount_minor": 550000, "category": "TRAVEL", "merchant": null}
+{"text": "bought a gift for mom 2k", "amount_minor": 200000, "category": "GIFTS", "merchant": null}
+{"text": "paid car insurance 12000", "amount_minor": 1200000, "category": "INSURANCE", "merchant": null}
+{"text": "invested 5000 in mutual funds", "amount_minor": 500000, "category": "SAVINGS_INVESTMENT", "merchant": null}
+{"text": "misc stuff 200", "amount_minor": 20000, "category": "OTHER", "merchant": null}
+{"text": "bill came to about 1.2k after discount for the dinner", "amount_minor": 120000, "category": "DINING", "merchant": null}
+{"text": "spent 540.50 on snacks", "amount_minor": 54050, "category": "GROCERIES", "merchant": null}
+{"text": "bought veggies", "amount_minor": null, "category": "GROCERIES", "merchant": null}
+{"text": "paid 500", "amount_minor": 50000, "category": null, "merchant": null}
+{"text": "swiggy 350", "amount_minor": 35000, "category": "FOOD_DELIVERY", "merchant": "swiggy"}
+{"text": "jio recharge 299", "amount_minor": 29900, "category": "MOBILE_INTERNET", "merchant": "jio"}
+{"text": "bought a book from amazon for ₹399", "amount_minor": 39900, "category": "SHOPPING", "merchant": "amazon"}

@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "valence": {
+            "type": "number",
+            "minimum": -1.0,
+            "maximum": 1.0
+          },
+          "arousal": {
+            "type": "number",
+            "minimum": -1.0,
+            "maximum": 1.0
+          },
+          "emotion_tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": ["text", "valence", "arousal", "emotion_tags"]
+      }
+    }
+  },
+  "required": ["examples"]
+}

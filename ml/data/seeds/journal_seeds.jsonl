@@ -1,0 +1,25 @@
+{"text": "I feel so happy today, the weather is amazing.", "valence": 0.8, "arousal": 0.5, "emotion_tags": ["joy", "contentment"]}
+{"text": "so tired...", "valence": -0.2, "arousal": -0.8, "emotion_tags": ["exhaustion"]}
+{"text": "I can't believe I lost my keys again, I'm so frustrated.", "valence": -0.7, "arousal": 0.7, "emotion_tags": ["frustration", "anger"]}
+{"text": "Feeling anxious about the meeting tomorrow.", "valence": -0.6, "arousal": 0.6, "emotion_tags": ["anxiety", "worry"]}
+{"text": "I am so drained today.", "valence": -0.5, "arousal": -0.7, "emotion_tags": ["exhaustion", "burnout"]}
+{"text": "Had a great time at the park with friends, we just talked and walked around.", "valence": 0.7, "arousal": 0.3, "emotion_tags": ["happiness", "connection"]}
+{"text": "Feeling pretty neutral today, nothing much happened.", "valence": 0.0, "arousal": -0.2, "emotion_tags": ["boredom", "calm"]}
+{"text": "Just woke up feeling sick.", "valence": -0.6, "arousal": -0.5, "emotion_tags": ["unwell", "sluggish"]}
+{"text": "I am so excited for the concert tonight!", "valence": 0.9, "arousal": 0.9, "emotion_tags": ["excitement", "anticipation"]}
+{"text": "Feeling a bit lonely this evening.", "valence": -0.4, "arousal": -0.4, "emotion_tags": ["loneliness", "sadness"]}
+{"text": "Got a promotion at work, I'm over the moon!", "valence": 1.0, "arousal": 0.8, "emotion_tags": ["joy", "pride"]}
+{"text": "Everything feels so overwhelming right now, I just want to cry.", "valence": -0.8, "arousal": 0.5, "emotion_tags": ["overwhelm", "sadness"]}
+{"text": "Enjoying a quiet cup of coffee on the balcony.", "valence": 0.5, "arousal": -0.6, "emotion_tags": ["peace", "contentment"]}
+{"text": "I am so mad at my roommate for leaving the kitchen a mess.", "valence": -0.7, "arousal": 0.8, "emotion_tags": ["anger", "annoyance"]}
+{"text": "Feeling a bit numb today, like I'm just going through the motions.", "valence": -0.3, "arousal": -0.8, "emotion_tags": ["apathy", "numbness"]}
+{"text": "Nostalgic thinking about my childhood home.", "valence": 0.3, "arousal": -0.2, "emotion_tags": ["nostalgia"]}
+{"text": "I feel so embarrassed about what I said earlier.", "valence": -0.5, "arousal": 0.6, "emotion_tags": ["embarrassment", "regret"]}
+{"text": "Just finished a tough workout, feeling exhausted but proud.", "valence": 0.6, "arousal": 0.4, "emotion_tags": ["pride", "exhaustion"]}
+{"text": "I can't stop worrying about my finances.", "valence": -0.6, "arousal": 0.5, "emotion_tags": ["worry", "stress"]}
+{"text": "Feeling really grateful for my supportive family.", "valence": 0.8, "arousal": -0.1, "emotion_tags": ["gratitude", "love"]}
+{"text": "I feel so unmotivated to do anything today.", "valence": -0.4, "arousal": -0.6, "emotion_tags": ["apathy", "sluggishness"]}
+{"text": "It was just a regular day at the office.", "valence": 0.0, "arousal": -0.1, "emotion_tags": ["neutral"]}
+{"text": "I am terrified of the upcoming presentation.", "valence": -0.8, "arousal": 0.9, "emotion_tags": ["fear", "panic"]}
+{"text": "Feeling surprisingly energetic this morning!", "valence": 0.6, "arousal": 0.7, "emotion_tags": ["energy", "enthusiasm"]}
+{"text": "Feeling a bit melancholy watching the rain.", "valence": -0.2, "arousal": -0.5, "emotion_tags": ["melancholy", "sadness"]}
