@@ -67,19 +67,19 @@ def route(text: str) -> RouteDecision:
     if len(text) < 30 and SMALLTALK_PATTERNS.search(text.strip()):
         return RouteDecision(IntentEnum.SMALLTALK, 0.9, "Matches smalltalk patterns")
 
-    if len(text.split()) > 4:
-        # Free journaling with a spend buried in it still deserves a transaction row.
-        secondary = []
-        signal = "Reasonably long text with no other signals"
-        amt = extract_amount(text)
-        if amt is not None:
-            secondary.append(IntentEnum.FINANCE_LOG)
-            signal = f"Journal text carrying an amount: {amt.amount_minor}"
-        return RouteDecision(
-            IntentEnum.JOURNAL_FREE,
-            0.6,
-            signal,
-            secondary_intents=secondary,
-        )
-
-    return RouteDecision(IntentEnum.UNKNOWN, 0.0, "Too short or ambiguous")
+    # Anything left (no finance/mood keyword match, not smalltalk) still gets
+    # journaled and mood-analyzed by the model — no length floor. A one-word
+    # entry ("ugh") is exactly the kind of text the model, not this regex
+    # layer, should be trusted to read.
+    secondary = []
+    signal = "No other signals — routed to free journaling"
+    amt = extract_amount(text)
+    if amt is not None:
+        secondary.append(IntentEnum.FINANCE_LOG)
+        signal = f"Journal text carrying an amount: {amt.amount_minor}"
+    return RouteDecision(
+        IntentEnum.JOURNAL_FREE,
+        0.5,
+        signal,
+        secondary_intents=secondary,
+    )
