@@ -1,0 +1,11 @@
+{
+  "valid_json_rate": 1.0,
+  "valence_mae": 0.06766666666666668,
+  "arousal_mae": 0.10233333333333332,
+  "valence_corr": 0.8193217199793097,
+  "arousal_corr": 0.8624673158057525,
+  "n_samples": 30,
+  "adapter_dir": "ml/train/adapters/ft-jrn",
+  "evaluated_at": "2026-08-13T07:19:54.320875+00:00",
+  "mlflow_run_id": "a4d3620e3ec2498e89fb9daade82f991"
+}

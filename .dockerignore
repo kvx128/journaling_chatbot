@@ -10,3 +10,5 @@ tests/
 *.db
 *.sqlite
 *.sqlite3
+mlruns/
+mlartifacts/

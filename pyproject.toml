@@ -39,6 +39,7 @@ ml = [
     "accelerate>=1.14.0",
     "datasets>=5.0.1",
     "numpy>=2.5.2",
+    "mlflow>=3.0.0",
 ]
 
 [project.scripts]

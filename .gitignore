@@ -59,3 +59,10 @@ Thumbs.db
 # DVC-tracked sources in ml/data/.
 ml/train/adapters/
 ml/train/data/
+
+# MLflow local tracking store + logged model artifacts (includes copies of the
+# adapter weights per run — regenerable by re-running train/eval, same reason
+# as the ML artifacts above).
+mlflow.db
+mlruns/
+mlartifacts/

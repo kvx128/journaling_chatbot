@@ -3,6 +3,8 @@ import random
 import typer
 import torch
 import numpy as np
+import mlflow
+from datetime import datetime, timezone
 from pathlib import Path
 from transformers import (
     AutoTokenizer,
@@ -28,6 +30,9 @@ def evaluate(
     n_samples: int = typer.Option(30, help="Number of random validation examples to test"),
     seed: int = typer.Option(42, help="Random seed for sampling"),
 ):
+    mlflow.set_tracking_uri("sqlite:///mlflow.db")
+    mlflow.set_experiment("ft-jrn")
+
     val_file = Path("ml/train/data/journal_val.jsonl")
     if not val_file.exists():
         typer.echo(f"Error: Validation file {val_file} does not exist.", err=True)
@@ -62,117 +67,170 @@ def evaluate(
     sampled_examples = random.sample(val_examples, min(n_samples, len(val_examples)))
     actual_samples = len(sampled_examples)
 
-    typer.echo("Loading base model in 4-bit...")
-    bnb_config = BitsAndBytesConfig(
-        load_in_4bit=True,
-        bnb_4bit_quant_type="nf4",
-        bnb_4bit_compute_dtype=torch.bfloat16,
-        bnb_4bit_use_double_quant=True
-    )
+    with mlflow.start_run(run_name="eval") as run:
+        mlflow.log_params({
+            "adapter_dir": adapter_dir,
+            "base_model": base_model,
+            "n_samples": actual_samples,
+            "seed": seed
+        })
 
-    model = AutoModelForCausalLM.from_pretrained(
-        base_model,
-        device_map="auto",
-        torch_dtype=torch.bfloat16,
-        quantization_config=bnb_config
-    )
+        typer.echo("Loading base model in 4-bit...")
+        bnb_config = BitsAndBytesConfig(
+            load_in_4bit=True,
+            bnb_4bit_quant_type="nf4",
+            bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_use_double_quant=True
+        )
 
-    typer.echo(f"Loading adapter from {adapter_dir}...")
-    model = PeftModel.from_pretrained(model, adapter_dir)
-    model.eval()
+        model = AutoModelForCausalLM.from_pretrained(
+            base_model,
+            device_map="auto",
+            torch_dtype=torch.bfloat16,
+            quantization_config=bnb_config
+        )
 
-    typer.echo(f"Loading tokenizer from {adapter_dir}...")
-    tokenizer = AutoTokenizer.from_pretrained(adapter_dir)
+        typer.echo(f"Loading adapter from {adapter_dir}...")
+        model = PeftModel.from_pretrained(model, adapter_dir)
+        model.eval()
 
-    typer.echo(f"Running inference on {actual_samples} examples...")
+        typer.echo(f"Loading tokenizer from {adapter_dir}...")
+        tokenizer = AutoTokenizer.from_pretrained(adapter_dir)
 
-    valid_count = 0
-    gt_valence_list = []
-    pred_valence_list = []
-    gt_arousal_list = []
-    pred_arousal_list = []
+        typer.echo(f"Running inference on {actual_samples} examples...")
 
-    for i, ex in enumerate(sampled_examples):
-        user_text = ex["user_text"]
-        gt_json = ex["gt_json"]
+        valid_count = 0
+        gt_valence_list = []
+        pred_valence_list = []
+        gt_arousal_list = []
+        pred_arousal_list = []
 
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_text}
-        ]
+        for i, ex in enumerate(sampled_examples):
+            user_text = ex["user_text"]
+            gt_json = ex["gt_json"]
 
-        encoded = tokenizer.apply_chat_template(
-            messages,
-            add_generation_prompt=True,
-            return_tensors="pt",
-            return_dict=True,
-        ).to(model.device)
+            messages = [
+                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "user", "content": user_text}
+            ]
 
-        input_len = encoded["input_ids"].shape[1]
+            encoded = tokenizer.apply_chat_template(
+                messages,
+                add_generation_prompt=True,
+                return_tensors="pt",
+                return_dict=True,
+            ).to(model.device)
 
-        with torch.no_grad():
-            outputs = model.generate(
-                **encoded,
-                max_new_tokens=80,
-                do_sample=False,
-                temperature=None,
-                top_p=None,
-                pad_token_id=tokenizer.pad_token_id
-            )
+            input_len = encoded["input_ids"].shape[1]
 
-        gen_tokens = outputs[0][input_len:]
-        gen_text = tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
+            with torch.no_grad():
+                outputs = model.generate(
+                    **encoded,
+                    max_new_tokens=80,
+                    do_sample=False,
+                    temperature=None,
+                    top_p=None,
+                    pad_token_id=tokenizer.pad_token_id
+                )
 
-        trunc_user = user_text[:50].replace("\n", " ")
-        if len(user_text) > 50:
-            trunc_user += "..."
+            gen_tokens = outputs[0][input_len:]
+            gen_text = tokenizer.decode(gen_tokens, skip_special_tokens=True).strip()
 
-        gt_v = float(gt_json.get("valence", 0.0))
-        gt_a = float(gt_json.get("arousal", 0.0))
+            trunc_user = user_text[:50].replace("\n", " ")
+            if len(user_text) > 50:
+                trunc_user += "..."
 
-        try:
-            pred_json = json.loads(gen_text)
-            has_keys = all(k in pred_json for k in ["valence", "arousal", "emotion_tags"])
-            if has_keys:
-                pred_v = float(pred_json["valence"])
-                pred_a = float(pred_json["arousal"])
+            gt_v = float(gt_json.get("valence", 0.0))
+            gt_a = float(gt_json.get("arousal", 0.0))
 
-                valid_count += 1
-                gt_valence_list.append(gt_v)
-                pred_valence_list.append(pred_v)
-                gt_arousal_list.append(gt_a)
-                pred_arousal_list.append(pred_a)
+            try:
+                pred_json = json.loads(gen_text)
+                has_keys = all(k in pred_json for k in ["valence", "arousal", "emotion_tags"])
+                if has_keys:
+                    pred_v = float(pred_json["valence"])
+                    pred_a = float(pred_json["arousal"])
 
-                print(f"[{i+1}/{actual_samples}] \"{trunc_user}\" | gt=({gt_v:.2f},{gt_a:.2f}) pred=({pred_v:.2f},{pred_a:.2f})")
-            else:
-                missing_keys = [k for k in ["valence", "arousal", "emotion_tags"] if k not in pred_json]
-                print(f"[{i+1}/{actual_samples}] \"{trunc_user}\" | gt=({gt_v:.2f},{gt_a:.2f}) pred=PARSE_FAILED: Missing required keys {missing_keys}")
-        except Exception:
-            trunc_gen = gen_text[:60].replace("\n", " ")
-            print(f"[{i+1}/{actual_samples}] \"{trunc_user}\" | gt=({gt_v:.2f},{gt_a:.2f}) pred=PARSE_FAILED: {trunc_gen}")
+                    valid_count += 1
+                    gt_valence_list.append(gt_v)
+                    pred_valence_list.append(pred_v)
+                    gt_arousal_list.append(gt_a)
+                    pred_arousal_list.append(pred_a)
 
-    typer.echo("\n--- EVALUATION SUMMARY ---")
-    valid_rate = (valid_count / actual_samples) * 100 if actual_samples > 0 else 0.0
-    typer.echo(f"Valid JSON Rate : {valid_rate:.1f}% ({valid_count}/{actual_samples})")
+                    print(f"[{i+1}/{actual_samples}] \"{trunc_user}\" | gt=({gt_v:.2f},{gt_a:.2f}) pred=({pred_v:.2f},{pred_a:.2f})")
+                else:
+                    missing_keys = [k for k in ["valence", "arousal", "emotion_tags"] if k not in pred_json]
+                    print(f"[{i+1}/{actual_samples}] \"{trunc_user}\" | gt=({gt_v:.2f},{gt_a:.2f}) pred=PARSE_FAILED: Missing required keys {missing_keys}")
+            except Exception:
+                trunc_gen = gen_text[:60].replace("\n", " ")
+                print(f"[{i+1}/{actual_samples}] \"{trunc_user}\" | gt=({gt_v:.2f},{gt_a:.2f}) pred=PARSE_FAILED: {trunc_gen}")
 
-    if valid_count > 0:
-        gt_v_arr = np.array(gt_valence_list)
-        pred_v_arr = np.array(pred_valence_list)
-        gt_a_arr = np.array(gt_arousal_list)
-        pred_a_arr = np.array(pred_arousal_list)
+        typer.echo("\n--- EVALUATION SUMMARY ---")
+        valid_rate_frac = valid_count / actual_samples if actual_samples > 0 else 0.0
+        valid_rate_pct = valid_rate_frac * 100
+        typer.echo(f"Valid JSON Rate : {valid_rate_pct:.1f}% ({valid_count}/{actual_samples})")
 
-        mae_v = np.mean(np.abs(gt_v_arr - pred_v_arr))
-        mae_a = np.mean(np.abs(gt_a_arr - pred_a_arr))
+        mae_v = None
+        mae_a = None
+        corr_v = None
+        corr_a = None
 
-        corr_v = np.corrcoef(gt_v_arr, pred_v_arr)[0, 1] if valid_count > 1 else np.nan
-        corr_a = np.corrcoef(gt_a_arr, pred_a_arr)[0, 1] if valid_count > 1 else np.nan
+        if valid_count > 0:
+            gt_v_arr = np.array(gt_valence_list)
+            pred_v_arr = np.array(pred_valence_list)
+            gt_a_arr = np.array(gt_arousal_list)
+            pred_a_arr = np.array(pred_arousal_list)
 
-        typer.echo(f"Valence MAE     : {mae_v:.4f}")
-        typer.echo(f"Arousal MAE     : {mae_a:.4f}")
-        typer.echo(f"Valence Corr (r): {corr_v:.4f}")
-        typer.echo(f"Arousal Corr (r): {corr_a:.4f}")
-    else:
-        typer.echo("No valid JSON outputs to compute metrics.")
+            mae_v = float(np.mean(np.abs(gt_v_arr - pred_v_arr)))
+            mae_a = float(np.mean(np.abs(gt_a_arr - pred_a_arr)))
+
+            c_v = np.corrcoef(gt_v_arr, pred_v_arr)[0, 1] if valid_count > 1 else np.nan
+            c_a = np.corrcoef(gt_a_arr, pred_a_arr)[0, 1] if valid_count > 1 else np.nan
+
+            corr_v = float(c_v) if not np.isnan(c_v) else None
+            corr_a = float(c_a) if not np.isnan(c_a) else None
+
+            metrics_to_log = {
+                "valid_json_rate": valid_rate_frac,
+                "valence_mae": mae_v,
+                "arousal_mae": mae_a,
+                "valence_corr": corr_v,
+                "arousal_corr": corr_a
+            }
+
+            mlflow.log_metrics({k: v for k, v in metrics_to_log.items() if v is not None})
+
+            typer.echo(f"Valence MAE     : {mae_v:.4f}")
+            typer.echo(f"Arousal MAE     : {mae_a:.4f}")
+
+            cv_disp = f"{corr_v:.4f}" if corr_v is not None else "NaN"
+            ca_disp = f"{corr_a:.4f}" if corr_a is not None else "NaN"
+
+            typer.echo(f"Valence Corr (r): {cv_disp}")
+            typer.echo(f"Arousal Corr (r): {ca_disp}")
+        else:
+            typer.echo("No valid JSON outputs to compute metrics.")
+            mlflow.log_metrics({"valid_json_rate": valid_rate_frac})
+
+        eval_results_file = Path("ml/train/eval_results.json")
+        eval_results_file.parent.mkdir(parents=True, exist_ok=True)
+
+        summary_dict = {
+            "valid_json_rate": valid_rate_frac,
+            "valence_mae": mae_v,
+            "arousal_mae": mae_a,
+            "valence_corr": corr_v,
+            "arousal_corr": corr_a,
+            "n_samples": actual_samples,
+            "adapter_dir": adapter_dir,
+            "evaluated_at": datetime.now(timezone.utc).isoformat(),
+            "mlflow_run_id": run.info.run_id
+        }
+
+        with open(eval_results_file, "w", encoding="utf-8") as f:
+            json.dump(summary_dict, f, indent=2)
+
+        typer.echo(f"Evaluation results written to: {eval_results_file}")
+        typer.echo(f"MLflow run: {run.info.run_id}")
 
 if __name__ == "__main__":
     app()

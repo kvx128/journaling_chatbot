@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "latest"
+      - name: Sync dependencies
+        run: uv sync --frozen
+      - name: Run tests
+        run: uv run pytest -q
+
+  eval-gate:
+    runs-on: ubuntu-latest
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Check eval metrics
+        run: |
+          python -c '
+          import json
+          import sys
+          import os
+
+          filepath = "ml/train/eval_results.json"
+          if not os.path.exists(filepath):
+              print("No eval_results.json found — run ml/train/eval_journal.py and commit the result before merging model changes.")
+              sys.exit(1)
+
+          with open(filepath, "r") as f:
+              results = json.load(f)
+
+          failed = False
+
+          rate = results.get("valid_json_rate", 0.0)
+          print(f"valid_json_rate: {rate} (threshold: >= 0.90) -> ", end="")
+          if rate >= 0.90:
+              print("PASS")
+          else:
+              print("FAIL")
+              failed = True
+
+          v_corr = results.get("valence_corr")
+          if v_corr is None:
+              print("valence_corr: None (threshold: >= 0.70) -> PASS (WARNING: metric missing)")
+          else:
+              print(f"valence_corr: {v_corr} (threshold: >= 0.70) -> ", end="")
+              if v_corr >= 0.70:
+                  print("PASS")
+              else:
+                  print("FAIL")
+                  failed = True
+
+          a_corr = results.get("arousal_corr")
+          if a_corr is None:
+              print("arousal_corr: None (threshold: >= 0.70) -> PASS (WARNING: metric missing)")
+          else:
+              print(f"arousal_corr: {a_corr} (threshold: >= 0.70) -> ", end="")
+              if a_corr >= 0.70:
+                  print("PASS")
+              else:
+                  print("FAIL")
+                  failed = True
+
+          if failed:
+              sys.exit(1)
+          sys.exit(0)
+          '
