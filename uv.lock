@@ -1394,17 +1394,12 @@ name = "journaling-chatbot"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "accelerate" },
     { name = "alembic" },
-    { name = "bitsandbytes" },
-    { name = "datasets" },
     { name = "dateparser" },
     { name = "docker" },
     { name = "dvc" },
     { name = "fastapi" },
     { name = "httpx" },
-    { name = "numpy" },
-    { name = "peft" },
     { name = "pydantic" },
     { name = "pydantic-settings" },
     { name = "pytest" },
@@ -1412,26 +1407,35 @@ dependencies = [
     { name = "python-dateutil" },
     { name = "rich" },
     { name = "sqlalchemy" },
-    { name = "torch" },
-    { name = "transformers" },
-    { name = "trl" },
     { name = "typer" },
     { name = "uvicorn", extra = ["standard"] },
 ]
 
+[package.optional-dependencies]
+ml = [
+    { name = "accelerate" },
+    { name = "bitsandbytes" },
+    { name = "datasets" },
+    { name = "numpy" },
+    { name = "peft" },
+    { name = "torch" },
+    { name = "transformers" },
+    { name = "trl" },
+]
+
 [package.metadata]
 requires-dist = [
-    { name = "accelerate", specifier = ">=1.14.0" },
+    { name = "accelerate", marker = "extra == 'ml'", specifier = ">=1.14.0" },
     { name = "alembic" },
-    { name = "bitsandbytes", specifier = ">=0.50.0" },
-    { name = "datasets", specifier = ">=5.0.1" },
+    { name = "bitsandbytes", marker = "extra == 'ml'", specifier = ">=0.50.0" },
+    { name = "datasets", marker = "extra == 'ml'", specifier = ">=5.0.1" },
     { name = "dateparser" },
     { name = "docker" },
     { name = "dvc", specifier = ">=3.67.1" },
     { name = "fastapi" },
     { name = "httpx" },
-    { name = "numpy", specifier = ">=2.5.2" },
-    { name = "peft", specifier = ">=0.20.0" },
+    { name = "numpy", marker = "extra == 'ml'", specifier = ">=2.5.2" },
+    { name = "peft", marker = "extra == 'ml'", specifier = ">=0.20.0" },
     { name = "pydantic", specifier = ">=2" },
     { name = "pydantic-settings" },
     { name = "pytest" },
@@ -1439,12 +1443,13 @@ requires-dist = [
     { name = "python-dateutil" },
     { name = "rich" },
     { name = "sqlalchemy", specifier = ">=2.0" },
-    { name = "torch", specifier = ">=2.11.0", index = "https://download.pytorch.org/whl/cu128" },
-    { name = "transformers", specifier = ">=5.15.0" },
-    { name = "trl", specifier = ">=1.9.2" },
+    { name = "torch", marker = "extra == 'ml'", specifier = ">=2.11.0", index = "https://download.pytorch.org/whl/cu128" },
+    { name = "transformers", marker = "extra == 'ml'", specifier = ">=5.15.0" },
+    { name = "trl", marker = "extra == 'ml'", specifier = ">=1.9.2" },
     { name = "typer" },
     { name = "uvicorn", extras = ["standard"] },
 ]
+provides-extras = ["ml"]
 
 [[package]]
 name = "kombu"

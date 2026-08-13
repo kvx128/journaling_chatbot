@@ -41,6 +41,32 @@ services:
     environment:
       - DATABASE_URL=sqlite:////app/data/journal.db
       - API_KEY=dev-local-key
+      - MODEL_SERVER_URL=http://model-server:8003
+
+  model-server:
+    container_name: journaling-model-server
+    build:
+      context: .
+      dockerfile: services/model_server/Dockerfile
+    expose:
+      - "8003"
+    volumes:
+      # Read-only mount of the host's already-populated HF cache so the 2.4GB
+      # gated Llama 3.2 1B base model doesn't need to be re-downloaded (or
+      # re-authenticated) inside the container. Matches the default cache
+      # path a root-user container resolves to (HF_HOME unset -> ~/.cache/huggingface).
+      - C:/Users/kvx12/.cache/huggingface/hub:/root/.cache/huggingface/hub:ro
+    environment:
+      - HF_HUB_OFFLINE=1
+      - BASE_MODEL=meta-llama/Llama-3.2-1B-Instruct
+      - ADAPTER_DIR=/app/adapter
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 volumes:
   journal_data:

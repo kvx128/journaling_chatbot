@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import json
 from datetime import date, datetime
 from typing import Any, Optional
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from shared.models.enums import (
     BudgetPeriod,
@@ -88,7 +89,24 @@ class MoodCheckinRead(BaseModel):
     energy: Optional[int] = None
     social_contact: Optional[bool] = None
     note: Optional[str] = None
+    valence: Optional[float] = None
+    arousal: Optional[float] = None
+    emotion_tags: Optional[list[str]] = None
     recorded_at: datetime
+
+    @field_validator("emotion_tags", mode="before")
+    @classmethod
+    def parse_emotion_tags(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, list):
+            return v
+        if isinstance(v, str):
+            try:
+                return json.loads(v)
+            except Exception:
+                return None
+        return None
 
 
 class CategorySummaryItem(BaseModel):

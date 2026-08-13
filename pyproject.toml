@@ -24,6 +24,13 @@ dependencies = [
     "pytest",
     "pytest-asyncio",
     "dvc>=3.67.1",
+]
+
+[project.optional-dependencies]
+# Only needed for training/eval scripts (ml/train/*) and the model-server
+# service. Kept out of the base dependency set so orchestrator/finance-bot/
+# journal-bot Docker images don't pull in a multi-GB CUDA stack they never use.
+ml = [
     "torch>=2.11.0",
     "transformers>=5.15.0",
     "peft>=0.20.0",

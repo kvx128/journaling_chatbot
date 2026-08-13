@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from datetime import date, datetime
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -17,6 +18,9 @@ class MoodRepository(BaseRepository[MoodEntry]):
         energy: int | None = None,
         social_contact: bool | None = None,
         note: str | None = None,
+        valence: float | None = None,
+        arousal: float | None = None,
+        emotion_tags: list[str] | None = None,
         recorded_at: datetime | None = None,
     ) -> MoodEntry:
         entry = MoodEntry(
@@ -26,6 +30,9 @@ class MoodRepository(BaseRepository[MoodEntry]):
             energy=energy,
             social_contact=social_contact,
             note=note,
+            valence=valence,
+            arousal=arousal,
+            emotion_tags=json.dumps(emotion_tags) if emotion_tags is not None else None,
         )
         if recorded_at is not None:
             entry.recorded_at = recorded_at

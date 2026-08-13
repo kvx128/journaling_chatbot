@@ -98,6 +98,9 @@ class MoodEntry(Base):
     energy: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
     social_contact: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
     note: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    valence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    arousal: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    emotion_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     recorded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
@@ -107,6 +110,8 @@ class MoodEntry(Base):
     __table_args__ = (
         CheckConstraint("self_report >= 1 AND self_report <= 5", name="chk_self_report_range"),
         CheckConstraint("energy IS NULL OR (energy >= 1 AND energy <= 5)", name="chk_energy_range"),
+        CheckConstraint("valence IS NULL OR (valence >= -1.0 AND valence <= 1.0)", name="chk_valence_range"),
+        CheckConstraint("arousal IS NULL OR (arousal >= -1.0 AND arousal <= 1.0)", name="chk_arousal_range"),
         Index("ix_mood_entries_user_recorded", "user_id", "recorded_at"),
     )
 
