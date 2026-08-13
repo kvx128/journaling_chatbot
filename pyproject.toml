@@ -40,6 +40,9 @@ ml = [
     "datasets>=5.0.1",
     "numpy>=2.5.2",
     "mlflow>=3.0.0",
+    "gguf>=0.10.0",
+    "llama-cpp-python>=0.3.0",
+    "sentencepiece>=0.2.0",
 ]
 
 [project.scripts]
@@ -55,6 +58,12 @@ name = "pytorch-cu128"
 url = "https://download.pytorch.org/whl/cu128"
 explicit = true
 
+[[tool.uv.index]]
+name = "llama-cpp-cpu"
+url = "https://abetlen.github.io/llama-cpp-python/whl/cpu"
+explicit = true
+
 [tool.uv.sources]
 torch = { index = "pytorch-cu128" }
 torchvision = { index = "pytorch-cu128" }
+llama-cpp-python = { index = "llama-cpp-cpu" }

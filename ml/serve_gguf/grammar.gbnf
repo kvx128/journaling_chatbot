@@ -1,0 +1,5 @@
+root ::= "{" ws "\"valence\"" ws ":" ws number "," ws "\"arousal\"" ws ":" ws number "," ws "\"emotion_tags\"" ws ":" ws tag-array "}"
+ws ::= [ \t\n]*
+number ::= "-"? [0-9]+ ("." [0-9]+)?
+tag-array ::= "[" ws (tag-string (ws "," ws tag-string)*)? ws "]"
+tag-string ::= "\"" [a-z]* "\""

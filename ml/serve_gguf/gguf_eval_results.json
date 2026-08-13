@@ -1,0 +1,22 @@
+{
+  "unconstrained": {
+    "valid_json_rate": 1.0,
+    "valence_mae": 0.06933333333333333,
+    "arousal_mae": 0.10533333333333333,
+    "valence_corr": 0.8606052946036176,
+    "arousal_corr": 0.8768459155647534,
+    "avg_latency_ms": 430.3020800000013
+  },
+  "constrained": {
+    "valid_json_rate": 1.0,
+    "valence_mae": 0.06933333333333333,
+    "arousal_mae": 0.10266666666666667,
+    "valence_corr": 0.8606052946036176,
+    "arousal_corr": 0.8863528709863083,
+    "avg_latency_ms": 751.068776666701
+  },
+  "n_samples": 30,
+  "gguf_path": "ml/serve_gguf/gguf_out/ft-jrn-Q4_K_M.gguf",
+  "evaluated_at": "2026-08-13T08:03:44.624096+00:00",
+  "mlflow_run_id": "c225385a65734d5682fc12047c15c2da"
+}

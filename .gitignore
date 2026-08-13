@@ -66,3 +66,8 @@ ml/train/data/
 mlflow.db
 mlruns/
 mlartifacts/
+
+# GGUF quantized model files — large binaries, regenerable via
+# ml/serve_gguf/merge_adapter.py + quantize_gguf.py. ft-jrn-merged/ is already
+# covered by ml/train/adapters/ above.
+ml/serve_gguf/gguf_out/
