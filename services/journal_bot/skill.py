@@ -70,6 +70,34 @@ def handle_mood_checkin(db: Session, user_id: int, text: str) -> tuple[str, dict
 
 def handle_journal_free(db: Session, user_id: int, text: str) -> tuple[str, dict[str, Any] | None]:
     repo = JournalRepository(db)
+
+    model_client = ModelServerClient()
+    model_res = model_client.infer_mood(text)
+
+    if model_res is not None:
+        valence = model_res["valence"]
+        arousal = model_res["arousal"]
+        emotion_tags = model_res.get("emotion_tags")
+
+        entry = repo.create(
+            user_id=user_id,
+            body=text,
+            valence=valence,
+            arousal=arousal,
+            emotion_tags=emotion_tags,
+        )
+
+        reply = "I've saved that to your journal."
+        structured = {
+            "journal_entry_id": entry.id,
+            "valence": valence,
+            "arousal": arousal,
+            "emotion_tags": emotion_tags,
+        }
+        return reply, structured
+
+    # Model unavailable/malformed output — still save the text, just without a
+    # mood score. Leaves valence/arousal/emotion_tags null rather than guessing.
     entry = repo.create(user_id=user_id, body=text)
 
     reply = "I've saved that to your journal."

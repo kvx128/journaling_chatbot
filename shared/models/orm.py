@@ -122,8 +122,17 @@ class JournalEntry(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
     body: Mapped[str] = mapped_column(Text, nullable=False)
+    valence: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    arousal: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    emotion_tags: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), nullable=False, server_default=func.now()
     )
 
     user: Mapped[User] = relationship(back_populates="journal_entries")
+
+    __table_args__ = (
+        CheckConstraint("valence IS NULL OR (valence >= -1.0 AND valence <= 1.0)", name="chk_journal_valence_range"),
+        CheckConstraint("arousal IS NULL OR (arousal >= -1.0 AND arousal <= 1.0)", name="chk_journal_arousal_range"),
+        Index("ix_journal_entries_user_created", "user_id", "created_at"),
+    )
