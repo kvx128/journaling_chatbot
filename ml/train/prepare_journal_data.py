@@ -19,7 +19,7 @@ from ml.data.dedupe import SeenSet
 
 ROOT = Path(__file__).parent.parent.parent
 PUBLIC_VA = ROOT / "ml" / "data" / "public" / "va_combined.jsonl"
-GENERATED_JOURNAL = ROOT / "ml" / "data" / "generated" / "journal.jsonl"
+GENERATED_JOURNAL = ROOT / "ml" / "data" / "generated" / "journal_qa_clean.jsonl"
 OUT_DIR = Path(__file__).parent / "data"
 
 VAL_SIZE = 500

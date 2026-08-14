@@ -1,11 +1,11 @@
 {
   "valid_json_rate": 1.0,
-  "valence_mae": 0.06766666666666668,
-  "arousal_mae": 0.10233333333333332,
-  "valence_corr": 0.8193217199793097,
-  "arousal_corr": 0.8624673158057525,
+  "valence_mae": 0.08166666666666665,
+  "arousal_mae": 0.10833333333333335,
+  "valence_corr": 0.9193529083094134,
+  "arousal_corr": 0.8928926821211637,
   "n_samples": 30,
   "adapter_dir": "ml/train/adapters/ft-jrn",
-  "evaluated_at": "2026-08-13T07:19:54.320875+00:00",
-  "mlflow_run_id": "a4d3620e3ec2498e89fb9daade82f991"
+  "evaluated_at": "2026-08-14T08:01:46.988634+00:00",
+  "mlflow_run_id": "823efad3f2a34fabb0d90abbda002f45"
 }
