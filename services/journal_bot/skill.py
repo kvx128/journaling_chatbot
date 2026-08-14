@@ -4,6 +4,7 @@ from typing import Any
 from sqlalchemy.orm import Session
 
 from shared.extraction.mood import extract_mood_signal
+from shared.extraction.va_tags import tags_from_va
 from shared.repositories.journal_repo import JournalRepository
 from shared.repositories.mood_repo import MoodRepository
 from services.journal_bot.model_client import ModelServerClient
@@ -18,7 +19,7 @@ def handle_mood_checkin(db: Session, user_id: int, text: str) -> tuple[str, dict
     if model_res is not None:
         valence = model_res["valence"]
         arousal = model_res["arousal"]
-        emotion_tags = model_res.get("emotion_tags")
+        emotion_tags = model_res.get("emotion_tags") or tags_from_va(valence, arousal)
 
         # Scale valence (-1.0 to 1.0) to self_report (1 to 5)
         raw_score = round(((valence + 1) / 2) * 4) + 1
@@ -77,7 +78,7 @@ def handle_journal_free(db: Session, user_id: int, text: str) -> tuple[str, dict
     if model_res is not None:
         valence = model_res["valence"]
         arousal = model_res["arousal"]
-        emotion_tags = model_res.get("emotion_tags")
+        emotion_tags = model_res.get("emotion_tags") or tags_from_va(valence, arousal)
 
         entry = repo.create(
             user_id=user_id,
